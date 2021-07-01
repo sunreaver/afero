@@ -87,6 +87,13 @@ func (h HttpFs) Open(name string) (http.File, error) {
 	f, err := h.source.Open(name)
 	if err == nil {
 		if httpfile, ok := f.(http.File); ok {
+			stat, e := httpfile.Stat()
+			if e != nil {
+				return nil, e
+			}
+			if stat.IsDir() {
+				return nil, errors.New("dir not support")
+			}
 			return httpfile, nil
 		}
 	}
